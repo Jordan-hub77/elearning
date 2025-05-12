@@ -59,6 +59,7 @@ echo (isset($_p[1])) ? ucwords(str_replace("_", " ",$_p[1])) : ucwords(str_repla
         <div class="modal-header">
         <h5 class="modal-title">Confirmation</h5>
       </div>
+      
       <div class="modal-body">
         <div id="delete_content"></div>
       </div>
