@@ -1,4 +1,6 @@
+
 <?php
+//master.php
 require_once('../config.php');
 Class Master extends DBConnection {
 	private $settings;
@@ -10,6 +12,61 @@ Class Master extends DBConnection {
 	public function __destruct(){
 		parent::__destruct();
 	}
+
+//phort made
+public function save_lesson(){
+    extract($_POST);
+    $data = "";
+    foreach ($_POST as $k => $v) {
+        if (!in_array($k, ['id', 'class_ids']) && !is_numeric($k)) {
+            if (!empty($data)) $data .= ", ";
+            $data .= " {$k} = '".addslashes($v)."' ";
+        }
+    }
+
+    if (empty($id)) {
+        $sql = "INSERT INTO lessons set {$data}";
+    } else {
+        $sql = "UPDATE lessons set {$data} where id = {$id}";
+    }
+
+    $save = $this->conn->query($sql);
+    if ($save) {
+        $lid = empty($id) ? $this->conn->insert_id : $id;
+
+        // Save class mapping
+        $this->conn->query("DELETE FROM lesson_class where lesson_id = '{$lid}'");
+        foreach ($_POST['class_ids'] as $cid) {
+            $this->conn->query("INSERT INTO lesson_class (lesson_id, class_id) VALUES ('{$lid}', '{$cid}')");
+        }
+
+        // Handle file uploads
+        if(isset($_FILES['ppt_slide']) && count($_FILES['ppt_slide']['tmp_name']) > 0){
+            $upload_path = base_app . "uploads/lessons/";
+            if(!is_dir($upload_path))
+                mkdir($upload_path, 0777, true);
+
+            foreach($_FILES['ppt_slide']['tmp_name'] as $i => $tmp){
+                $fname = $_FILES['ppt_slide']['name'][$i];
+                $ext = pathinfo($fname, PATHINFO_EXTENSION);
+                $new_name = "lesson-{$lid}-".time()."-{$i}.{$ext}";
+                if(move_uploaded_file($tmp, $upload_path . $new_name)){
+                    $this->conn->query("INSERT INTO lesson_files (lesson_id, file_path) VALUES ('{$lid}', '{$new_name}')");
+                }
+            }
+        }
+
+        return $lid;
+    } else {
+        return json_encode(['error' => 'DB Error', 'sql' => $sql]);
+    }
+}
+
+//edn online made
+
+
+
+
 	public function save_academic(){
 		extract($_POST);
 		
@@ -394,7 +451,7 @@ Class Master extends DBConnection {
 			return json_encode($resp);
 		}
 	}
-
+   /*
 	public function save_lesson(){
 		extract($_POST);
 		$data = "";
@@ -453,7 +510,7 @@ Class Master extends DBConnection {
 			$resp['sql2'] = $sql2;
 			return json_encode($resp);
 		}
-	}
+	} */
 	function upload_files(){
 		$dir = 'uploads/media/'.$this->settings->userdata('id');
 		if(!is_dir(base_app.$dir)){
@@ -677,3 +734,6 @@ switch ($action) {
 		// echo $sysset->index();
 		break;
 }
+
+
+

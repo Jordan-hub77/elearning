@@ -131,14 +131,15 @@ if(isset($_GET['id'])){
 			    method: 'POST',
 			    type: 'POST',
 				error:err=>{
-					console.log(err)
-					alert_toast('An error occured');
+					console.log(err);
+					alert_toast('An error occuredd');
 					end_loader();
 				},
 				success:function(resp){
 					if(resp>0){
 						location.href = "./?page=lesson/view_lesson&id="+resp;
 					}else{
+						console.log(resp)
 						alert_toast('An error occured');
 					}
 					end_loader();

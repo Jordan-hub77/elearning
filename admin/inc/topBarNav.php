@@ -1,5 +1,5 @@
 <!-- Navbar -->
-      <nav class="main-header navbar navbar-expand navbar-white navbar-dark text-sm bg-indigo">
+      <nav class="main-header navbar navbar-expand navbar-white navbar-dark text-sm myapp-color">
         <!-- Left navbar links -->
         <ul class="navbar-nav">
           

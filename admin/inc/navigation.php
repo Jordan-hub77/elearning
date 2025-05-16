@@ -1,8 +1,8 @@
 
 <!-- Main Sidebar Container -->
-      <aside class="main-sidebar sidebar-dark-primary elevation-4 bg-purple">
+      <aside class="main-sidebar sidebar-dark-primary elevation-4 myapp-color">
         <!-- Brand Logo -->
-        <a href="<?php echo base_url ?>admin" class="brand-link text-sm bg-maroon text-white">
+        <a href="<?php echo base_url ?>admin" class="brand-link text-sm myapp-color  text-white">
         <img src="<?php echo validate_image($_settings->info('logo'))?>" alt="Store Logo" class="brand-image img-circle elevation-3" style="width: 1.88rem;height: 1.88rem;max-height: unset">
         <span class="brand-text font-weight-light"><?php echo $_settings->info('short_name') ?></span>
         </a>
