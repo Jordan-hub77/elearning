@@ -42,6 +42,7 @@ if (!empty($id)) {
 .pdf_viewer {
     width: 100%;
     height: 80vh;
+    border: none;
 }
 video.note-video-clip {
     width: 100%;
@@ -72,14 +73,22 @@ video.note-video-clip {
             <div id="lesson_slides" class="carousel slide" data-ride="carousel" data-interval="0">
                 <div class="carousel-inner">
                     <?php 
-                    // Fetch slides from database
+                    // Fetch slides from database and determine type based on file extension
                     $valid_slides = [];
                     $get_lesson_file_sql = "SELECT file_path FROM `lesson_files` WHERE lesson_id = '$id'";
                     $get_lesson_file_query = mysqli_query($conn, $get_lesson_file_sql);
 
                     if ($get_lesson_file_query && mysqli_num_rows($get_lesson_file_query) > 0) {
                         while ($row = mysqli_fetch_assoc($get_lesson_file_query)) {
-                            $valid_slides[] =  base_url.'uploads/lessons/'.$row['file_path'];
+                            $file = $row['file_path'];
+                            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                            $full_path = base_url.'uploads/lessons/'.$file;
+
+                            if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
+                                $valid_slides[] = ['type' => 'image', 'path' => $full_path];
+                            } elseif ($ext == 'pdf') {
+                                $valid_slides[] = ['type' => 'pdf', 'path' => $full_path];
+                            }
                         }
                     }
 
@@ -88,7 +97,11 @@ video.note-video-clip {
                         foreach ($valid_slides as $slide):
                     ?>
                         <div class="carousel-item <?php echo $active; $active = ""; ?>">
-                            <img class="d-block w-100" src="<?php echo $slide ?>" alt="Lesson Slide">
+                            <?php if ($slide['type'] == 'image'): ?>
+                                <img class="d-block w-100" src="<?php echo $slide['path'] ?>" alt="Lesson Slide">
+                            <?php elseif ($slide['type'] == 'pdf'): ?>
+                                <iframe src="<?php echo base_url ?>faculty/file_uploads/view_pdf.php?path=<?php echo urlencode($slide['path']); ?>" class="pdf_viewer" title="PDF Viewer"></iframe>
+                            <?php endif; ?>
                         </div>
                     <?php 
                         endforeach;
@@ -120,7 +133,8 @@ video.note-video-clip {
             <hr>
             <div>
                 <?php 
-                $pdf_pattern = "<iframe src='" . base_url . "faculty/file_uploads/view_pdf.php?path=$2' class='pdf_viewer' title='PDF Viewer'></iframe>";
+                // Replace [pdf_view path=...] tag in description with an iframe PDF viewer
+                $pdf_pattern = "<iframe src='" . base_url . "file_uploads/view_pdf.php?path=$2' class='pdf_viewer' title='PDF Viewer'></iframe>";
                 echo preg_replace("/(\[pdf_view\spath\s=\s+)([a-zA-Z0-9\/_.-]+)(\])/i", $pdf_pattern, html_entity_decode($description));
                 ?>
             </div>
