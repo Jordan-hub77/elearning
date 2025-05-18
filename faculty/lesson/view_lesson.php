@@ -100,8 +100,9 @@ video.note-video-clip {
                             <?php if ($slide['type'] == 'image'): ?>
                                 <img class="d-block w-100" src="<?php echo $slide['path'] ?>" alt="Lesson Slide">
                             <?php elseif ($slide['type'] == 'pdf'): ?>
-                                <iframe src="<?php echo base_url ?>faculty/file_uploads/view_pdf.php?path=<?php echo urlencode($slide['path']); ?>" class="pdf_viewer" title="PDF Viewer"></iframe>
-                            <?php endif; ?>
+                              <!--  <iframe src="<?php echo base_url ?>faculty/file_uploads/view_pdf.php?path=<?php echo urlencode($slide['path']); ?>" class="pdf_viewer" title="PDF Viewer"></iframe>-->
+                          <iframe src="<?php echo base_url ?>uploads/lessons/<?php $slide['path']; ?>" class="pdf_viewer" title="PDF Viewer"></iframe>
+                        <?php endif; ?>
                         </div>
                     <?php 
                         endforeach;
